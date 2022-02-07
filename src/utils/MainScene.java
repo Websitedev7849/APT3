@@ -17,11 +17,11 @@ public class MainScene extends Scene {
         super(parent, v, v1);
     }
 
-    private static Button getButton(String btnText, double v, String styleString) {
+    private static Button getButton(String btnText, double setLayoutY, String styleString) {
         Button button = new Button(btnText);
         button.setLayoutX(180);
 
-        button.setLayoutY(v); // c
+        button.setLayoutY(setLayoutY); // c
 
         button.setMinWidth(230);
         button.setMinHeight(35);
@@ -40,19 +40,10 @@ public class MainScene extends Scene {
         Button signUp_btn = getButton("Sign Up", 200, "-fx-background-color: #c3cfd9;");
 
         login_btn.setOnAction(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent arg0) {
-
-                Label message = new Label("This is Login screen");
-                message.setLayoutX(10);
-                message.setLayoutY(10);
-
-                Group root = new Group();
-                root.getChildren().add(message);
-
-                Scene scene = new Scene(root, 600,400);
-                stage.setScene(scene);
+                Scene loginScene = LoginScene.getScene(stage);
+                stage.setScene(loginScene);
             }
         });
         signUp_btn.setOnAction(new EventHandler<ActionEvent>() {
