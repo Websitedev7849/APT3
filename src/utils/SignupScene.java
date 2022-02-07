@@ -10,8 +10,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-public class LoginScene extends Scene {
-    private LoginScene(Parent parent, double v, double v1) {
+public class SignupScene extends Scene {
+
+    public SignupScene(Parent parent, double v, double v1) {
         super(parent, v, v1);
     }
 
@@ -55,19 +56,21 @@ public class LoginScene extends Scene {
     private static Group getGroup(Stage stage) {
         Group root = new Group();
 
-        TextField username_field = getInputField("Username", 120, false);
-        TextField password_field = getInputField("Password", 170, true);
+        TextField username_field = getInputField("Username", 100, false);
+        TextField password_field = getInputField("Password", 150, true);
+        TextField confirmPassword_field = getInputField("Confirm Password", 200, true);
 
-        Button login_btn = getButton("Login", 220, "-fx-background-color: #1aae9f; -fx-text-fill: #fff;");
+        Button login_btn = getButton("Login", 250, "-fx-background-color: #1aae9f; -fx-text-fill: #fff;");
 
         root.getChildren().add(username_field);
         root.getChildren().add(password_field);
+        root.getChildren().add(confirmPassword_field);
         root.getChildren().add(login_btn);
 
         return root;
     }
 
     public static Scene getScene(Stage stage) {
-        return new LoginScene(getGroup(stage), 600, 400);
+        return new SignupScene(getGroup(stage), 600, 400);
     }
 }

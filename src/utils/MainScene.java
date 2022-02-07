@@ -49,15 +49,8 @@ public class MainScene extends Scene {
         signUp_btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Label message = new Label("This is Sign Up screen");
-                message.setLayoutX(10);
-                message.setLayoutY(10);
-
-                Group root = new Group();
-                root.getChildren().add(message);
-
-                Scene scene = new Scene(root, 600,400);
-                stage.setScene(scene);
+                Scene signupScene = SignupScene.getScene(stage);
+                stage.setScene(signupScene);
             }
         });
 
