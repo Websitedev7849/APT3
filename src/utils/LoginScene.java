@@ -5,24 +5,31 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+
+
 
 public class LoginScene extends Scene {
 
-    final static String _URL = "http://127.0.0.1:8000/users";
+    final static String _URL = "https://amazonpricetracker3.herokuapp.com/users";
 
     private LoginScene(Parent parent, double v, double v1) {
         super(parent, v, v1);
@@ -65,39 +72,16 @@ public class LoginScene extends Scene {
 
     }
 
-    private static boolean isUserValid(String username, String password) throws Exception {
+    private static HttpResponse<String> isUserValid(String username, String password) throws IOException, InterruptedException {
+        final String QUERY_STRING = "?username=" + username +"&pwd=" + password;
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(_URL + QUERY_STRING))
+                .build();
 
-        URL url = new URL(_URL);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Content-Type", "application/json; utf-8");
-        connection.setDoOutput(true);
-        connection.setRequestMethod("GET");
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
 
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("username", username);
-        jsonObject.put("pwd", password);
-
-        String jsonString = jsonObject.toJSONString();
-
-
-        OutputStream os = connection.getOutputStream();
-        os.write(jsonString.getBytes(StandardCharsets.UTF_8), 0, jsonString.length());
-
-        StringBuilder response = new StringBuilder();
-        try  {
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-            String responseLine = null;
-            while((responseLine = br.readLine()) != null){
-                response.append(responseLine.trim());
-            }
-            System.out.println("response = " + response);
-        }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-
-        return false;
     }
 
     private static Group getGroup(Stage stage) {
@@ -105,8 +89,13 @@ public class LoginScene extends Scene {
 
         TextField username_field = getInputField("Username", 120, false);
         TextField password_field = getInputField("Password", 170, true);
-
         Button login_btn = getButton("Login", 220, "-fx-background-color: #1aae9f; -fx-text-fill: #fff;");
+
+        Label label = new Label("");
+        label.setLayoutX(235);
+        label.setLayoutY(340);
+        label.setStyle("-fx-text-fill : red;");
+        label.setFont(new Font("Airal", 15));
 
         login_btn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -114,14 +103,27 @@ public class LoginScene extends Scene {
                 final String USERNAME = username_field.getText();
                 final String PASSWORD = password_field.getText();
 
-                System.out.println("USERNAME = " + USERNAME);
-                System.out.println("PASSWORD = " + PASSWORD);
 
                 try {
-                    System.out.println("isUserValid(USERNAME, PASSWORD) = " + isUserValid(USERNAME, PASSWORD));
-                } catch (Exception e) {
+                    HttpResponse <String> response = isUserValid(USERNAME, PASSWORD);
+                    JSONParser parser = new JSONParser();
+
+                    JSONObject body = (JSONObject) parser.parse(response.body());
+
+                    if(response.statusCode() == 200) {
+                        label.setText((String) body.get("message"));
+                        label.setStyle("-fx-text-fill : green;");
+                    }
+                    else if (response.statusCode() == 404){
+                        label.setText((String) body.get("message"));
+                        label.setStyle("-fx-text-fill : red;");
+                    }
+                } catch (IOException | InterruptedException | ParseException e) {
                     e.printStackTrace();
+                    label.setText("Connection Problem");
+                    label.setStyle("-fx-text-fill : red;");
                 }
+
 
             }
         });
@@ -129,6 +131,7 @@ public class LoginScene extends Scene {
         root.getChildren().add(username_field);
         root.getChildren().add(password_field);
         root.getChildren().add(login_btn);
+        root.getChildren().add(label);
 
         return root;
     }

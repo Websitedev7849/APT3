@@ -3,9 +3,11 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/lib/javafx-sdk-17.0.2/lib" />
       <root url="file://$PROJECT_DIR$/lib/json-simple/lib" />
+      <root url="file://$PROJECT_DIR$/lib/apache/lib" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/apache/lib" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/javafx-sdk-17.0.2/lib" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/json-simple/lib" recursive="false" />
   </library>
