@@ -12,8 +12,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.config.RequestConfig;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -23,8 +21,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
-
+import java.util.HashMap;
 
 
 public class LoginScene extends Scene {
@@ -91,11 +88,14 @@ public class LoginScene extends Scene {
         TextField password_field = getInputField("Password", 170, true);
         Button login_btn = getButton("Login", 220, "-fx-background-color: #1aae9f; -fx-text-fill: #fff;");
 
+        username_field.setText("heinzdoof");
+        password_field.setText("123456789");
+
         Label label = new Label("");
         label.setLayoutX(235);
         label.setLayoutY(340);
         label.setStyle("-fx-text-fill : red;");
-        label.setFont(new Font("Airal", 15));
+        label.setFont(new Font("Arial", 15));
 
         login_btn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -110,11 +110,17 @@ public class LoginScene extends Scene {
 
                     JSONObject body = (JSONObject) parser.parse(response.body());
 
-                    if(response.statusCode() == 200) {
+                    if(response.statusCode() == 200) { // USER LOGGED IN
                         label.setText((String) body.get("message"));
                         label.setStyle("-fx-text-fill : green;");
+
+                        HashMap<String, Object> creds = new HashMap<>();
+                        creds.put("username", USERNAME);
+                        creds.put("password", PASSWORD);
+
+                        stage.setScene(HomeScene.getScene(stage, creds));
                     }
-                    else if (response.statusCode() == 404){
+                    else if (response.statusCode() == 403){ // USER LOG IN FAILED
                         label.setText((String) body.get("message"));
                         label.setStyle("-fx-text-fill : red;");
                     }
