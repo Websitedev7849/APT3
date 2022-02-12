@@ -8,10 +8,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.util.HashMap;
 
 public class HomeScene extends Scene {
@@ -21,24 +25,28 @@ public class HomeScene extends Scene {
     }
 
     private static Scene getScrollPane(Stage stage, HashMap<String, Object> creds) {
-        VBox root = new VBox();
+        VBox vBox = new VBox();
+
 
         for (int i = 0; i < 30; i++) {
-            Button btn = new Button("button");
-            btn.setAlignment(Pos.BASELINE_CENTER);
-            root.getChildren().add(btn);
+            Label label = new Label("this is home screen");
+            label.setStyle("-fx-text-fill: #8B008B;");
+            label.setLayoutX(200);
+
+            AnchorPane anchorPane = new AnchorPane();
+            anchorPane.prefWidthProperty().bind(vBox.widthProperty());
+            anchorPane.setStyle("-fx-background: red");
+
+            anchorPane.getChildren().add(label);
+            vBox.getChildren().add(anchorPane);
         }
 
-        root.minWidth(500);
-
-        root.setPadding(new Insets(10));
-        root.setSpacing(10);
+        vBox.setSpacing(20);
 
         ScrollPane sp = new ScrollPane();
-        sp.setContent(root);
-        sp.setStyle("-fx-background: red");
+        sp.setContent(vBox);
 
-        Scene scene = new Scene(sp, 700, 500);
+        Scene scene = new HomeScene(sp, 700, 500);
 
         System.out.println("creds.toString() = " + creds.toString());
         
