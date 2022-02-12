@@ -7,12 +7,22 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.HashMap;
 
 public class HomeScene extends Scene {
@@ -60,22 +70,43 @@ public class HomeScene extends Scene {
         return button;
     }
 
+    private static HttpResponse<String> getUsersProduct(HashMap<String, Object> creds) throws IOException, InterruptedException {
+        final String _URL = "https://amazonpricetracker3.herokuapp.com/usersproduct";
+        final String QUERY_STRING = "?username=" + creds.get("username") + "&pwd=" + creds.get("password");
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(_URL + QUERY_STRING))
+                .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+
+    }
+
     private static Scene getScrollPane(Stage stage, HashMap<String, Object> creds) {
         VBox vBox = new VBox();
 
         TextField link_field = getInputField("Paste Link Here", 14);
         Button submit_btn = getButton("Submit", 320,60, 25,"-fx-background-color: #6558f5; -fx-text-fill: #fff;");
 
-        AnchorPane anchorPane = new AnchorPane();
-        anchorPane.setMinWidth(SCENE_WIDTH);
-        anchorPane.getChildren().add(link_field);
-        anchorPane.getChildren().add(submit_btn);
-//        anchorPane.setStyle("-fx-border-color: green; -fx-border-width: 1px");
+        Pane searchPane = new Pane();
+        searchPane.setMinWidth(SCENE_WIDTH);
+        searchPane.getChildren().add(link_field);
+        searchPane.getChildren().add(submit_btn);
+//        searchPane.setStyle("-fx-border-color: red; -fx-border-width: 1px");
+
+        Pane productsPane = new Pane();
+        productsPane.setMinWidth(SCENE_WIDTH);
+
+//        productsPane.getChildren().add(random);
+//        productsPane.setStyle("-fx-border-color: green; -fx-border-width: 1px");
 
 
+        vBox.getChildren().add(searchPane);
+        vBox.getChildren().add(productsPane);
 
-        vBox.getChildren().add(anchorPane);
         vBox.setMinWidth(SCENE_WIDTH);
+        vBox.setSpacing(23);
         ScrollPane sp = new ScrollPane();
         sp.setMinWidth(SCENE_WIDTH);
         sp.setContent(vBox);
@@ -84,7 +115,26 @@ public class HomeScene extends Scene {
 
 
         System.out.println("creds.toString() = " + creds.toString());
-        
+
+        /**
+        try {
+            HttpResponse <String> response = null;
+
+            response = getUsersProduct(creds);
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(response.body());
+
+            JSONArray products = (JSONArray) body.get("products");
+
+
+
+
+        }
+        catch (IOException | InterruptedException | ParseException e) {
+            e.printStackTrace();
+        }
+        */
+
         return scene;
         
     }
