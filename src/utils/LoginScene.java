@@ -1,6 +1,7 @@
 package utils;
 
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -42,6 +43,8 @@ public class LoginScene extends Scene {
         button.setMinHeight(35);
         button.setFocusTraversable(false);
         button.setStyle(styleString); //c
+        button.setCursor(Cursor.HAND);
+
 
         button.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 15));
 

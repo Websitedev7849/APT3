@@ -1,5 +1,6 @@
 package utils;
 
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,6 +27,8 @@ public class SignupScene extends Scene {
         button.setMinHeight(35);
         button.setFocusTraversable(false);
         button.setStyle(styleString); //c
+        button.setCursor(Cursor.HAND);
+
 
         button.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 15));
 
