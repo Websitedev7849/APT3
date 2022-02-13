@@ -127,10 +127,10 @@ class GetProducts implements Runnable {
         this.creds = creds;
         this.vBox = vBox;
         this.vBox.setSpacing(30);
-        this.vBox.setPadding(new Insets(0, 70, 0, 100));
+        this.vBox.setPadding(new Insets(0, 85, 0, 100));
     }
 
-    private AnchorPane getProductsPane(JSONObject productObject){
+    private static AnchorPane getProductsPane(JSONObject productObject){
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.setMinWidth(HomeScene.SCENE_WIDTH);
         anchorPane.setMinHeight(100);
