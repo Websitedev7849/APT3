@@ -1,11 +1,14 @@
 package utils;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -165,6 +168,21 @@ class GetProducts implements Runnable {
         button.setStyle("-fx-background-color: #6558f5; -fx-text-fill: #fff;");
         button.setFont(Font.font("Arial",  FontWeight.SEMI_BOLD,15.0));
         button.setCursor(Cursor.HAND);
+        button.setId((String) productObject.get("asin"));
+        button.setOnAction((event)->{
+            final String ASIN =  (String) productObject.get("asin");
+
+            Stage stage = new Stage();
+
+            FluctuationStage fluctuationStage = new FluctuationStage(ASIN);
+            try {
+                fluctuationStage.start(stage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        });
 
         AnchorPane.setRightAnchor(button, 15.0);
         AnchorPane.setBottomAnchor(button, 15.0);
@@ -285,3 +303,4 @@ class GetProducts implements Runnable {
 
 
 }
+
