@@ -100,7 +100,6 @@ public class HomeScene extends Scene {
 
         Scene scene = new HomeScene(sp, SCENE_HEIGHT, SCENE_WIDTH);
 
-        System.out.println("creds.toString() = " + creds.toString());
 
         Runnable getProductsRunnable = new GetProducts(creds, vBox);
 
@@ -131,24 +130,29 @@ class GetProducts implements Runnable {
     }
 
     private static AnchorPane getProductsPane(JSONObject productObject){
+        /******* Anchor Pane will be appended to this.vbox *********/
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.setMinWidth(HomeScene.SCENE_WIDTH);
         anchorPane.setMinHeight(100);
         anchorPane.setLayoutX(150);
 
-        Label name_label = new Label((String) productObject.get("name"));
+        /******* Name of the product *********/
+        String nameOfProduct = (String) productObject.get("name");
+        nameOfProduct.toUpperCase();
+        Label name_label = new Label(nameOfProduct);
         name_label.setFont(Font.font("Arial",  FontWeight.SEMI_BOLD,15));
         name_label.setWrapText(true);
         name_label.setMaxWidth(300.0);
         AnchorPane.setLeftAnchor(name_label, 16.0);
         AnchorPane.setTopAnchor(name_label, 10.0);
 
+        /******* Label with Hard Coded "Today's Price" String *********/
         Label todaysPrice_label = new Label("Today's Price:");
         todaysPrice_label.setFont(Font.font("Arial",  FontWeight.SEMI_BOLD,15));
         AnchorPane.setLeftAnchor(todaysPrice_label, 15.0);
         AnchorPane.setBottomAnchor(todaysPrice_label, 15.0);
 
-
+        /******* Today's price Value of Product will be added tp this label *********/
         Double todaysPriceValue = (Double) productObject.get("price");
         Label todaysPriceValue_label = new Label(todaysPriceValue.toString());
         todaysPriceValue_label.setFont(Font.font("Arial", FontWeight.BOLD ,14));
@@ -156,9 +160,11 @@ class GetProducts implements Runnable {
         AnchorPane.setLeftAnchor(todaysPriceValue_label, 120.0);
         AnchorPane.setBottomAnchor(todaysPriceValue_label, 15.0);
 
+        /******* "Views Daily prices" Button *********/
         Button button = new Button("View daily prices");
         button.setStyle("-fx-background-color: #6558f5; -fx-text-fill: #fff;");
         button.setFont(Font.font("Arial",  FontWeight.SEMI_BOLD,15.0));
+        button.setCursor(Cursor.HAND);
 
         AnchorPane.setRightAnchor(button, 15.0);
         AnchorPane.setBottomAnchor(button, 15.0);
@@ -215,8 +221,7 @@ class GetProducts implements Runnable {
              }
 
              for (JSONObject j : productObjectsLists) {
-                 System.out.println("j = " + j);
-                    vBox.getChildren().add(getProductsPane(j));
+                 vBox.getChildren().add(getProductsPane(j));
              }
 
          }
