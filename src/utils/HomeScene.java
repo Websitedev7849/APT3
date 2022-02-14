@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -42,7 +43,7 @@ public class HomeScene extends Scene {
     private static TextField getInputField(String promptText, int setLayoutY) {
         TextField inputField = null;
 
-        inputField =  new PasswordField();
+        inputField =  new TextField();
 
         inputField.setPromptText(promptText); //c
         inputField.setFont(new Font("Arial", 15));
@@ -80,21 +81,38 @@ public class HomeScene extends Scene {
         TextField link_field = getInputField("Paste Link Here", 14);
         Button submit_btn = getButton("Submit", 240,60, 25,"-fx-background-color: #6558f5; -fx-text-fill: #fff;");
 
-        Pane searchPane = new Pane();
-        searchPane.setMinWidth(SCENE_WIDTH);
-        searchPane.getChildren().add(link_field);
-        searchPane.getChildren().add(submit_btn);
+        submit_btn.setOnAction((event) -> {
+            final String _URL = "https://amazonpricetracker3.herokuapp.com/usersproduct";
 
+            JSONObject body = new JSONObject();
+            body.put("username", creds.get("username"));
+            body.put("pwd", creds.get("password"));
+            body.put("link", link_field.getText());
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(body.toJSONString()))
+                    .uri(URI.create(_URL))
+                    .build();
+
+            try {
+                HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                System.out.println("response = " + response);
+                System.out.println("response = " + response.body());
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
 
 
         VBox vBox = new VBox();
-        vBox.getChildren().add(searchPane);
-//        vBox.setMinWidth(SCENE_WIDTH);
         vBox.setPrefWidth(SCENE_WIDTH);
         vBox.setPrefHeight(SCENE_HEIGHT);
         vBox.setSpacing(23);
         vBox.setStyle("-fx-background-color: #fff");
+        vBox.getChildren().add(link_field);
+        vBox.getChildren().add(submit_btn);
 
         ScrollPane sp = new ScrollPane();
         sp.setMinWidth(SCENE_WIDTH);
@@ -132,6 +150,14 @@ class GetProducts implements Runnable {
         this.vBox.setPadding(new Insets(0, 85, 0, 100));
     }
 
+    /**
+     * @params JSONobject
+     * e.g: {
+     *       "asin": "B099S1MMJL",
+     *       "name": "Master Labs Diamond Office Revolving Desk Chair with Umbrella Base with XW Handle (Black)",
+     *       "price": 1700
+     *  },
+     * */
     private static AnchorPane getProductsPane(JSONObject productObject){
         /******* Anchor Pane will be appended to this.vbox *********/
         AnchorPane anchorPane = new AnchorPane();
@@ -141,7 +167,8 @@ class GetProducts implements Runnable {
 
         /******* Name of the product *********/
         String nameOfProduct = (String) productObject.get("name");
-        nameOfProduct.toUpperCase();
+        nameOfProduct = nameOfProduct.toUpperCase().substring(0, Math.min(nameOfProduct.length(), 40));
+
         Label name_label = new Label(nameOfProduct);
         name_label.setFont(Font.font("Arial",  FontWeight.SEMI_BOLD,15));
         name_label.setWrapText(true);
@@ -279,6 +306,20 @@ class GetProducts implements Runnable {
 
     }
 
+    /**
+     * @params JSONobject
+     * e.g: {
+     *       "asin": "B099S1MMJL",
+     *       "name": "Master Labs Diamond Office Revolving Desk Chair with Umbrella Base with XW Handle (Black)",
+     *  }
+     *
+     * @returns JSONObject
+     * e.g: {
+     *      "asin": "B099S1MMJL",
+     *      "name": "Master Labs Diamond Office Revolving Desk Chair with Umbrella Base with XW Handle (Black)",
+     *      "price": 1700
+     *      }
+     * */
     private void getTodaysPrice(JSONObject product) throws IOException, InterruptedException {
         final String _URL = "https://amazonpricetracker3.herokuapp.com/getprice?url=https://www.amazon.in/dp/" + product.get("asin");
         HttpClient client = HttpClient.newHttpClient();
@@ -293,7 +334,7 @@ class GetProducts implements Runnable {
             responseObject = (JSONObject) parser.parse(response.body().toString());
             product.put("price", responseObject.get("price"));
         } catch (ParseException e) {
-            product.put("price", -1);
+            product.put("price", -1.0);
             e.printStackTrace();
         }
         finally {
