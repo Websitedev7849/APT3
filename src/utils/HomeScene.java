@@ -76,11 +76,14 @@ public class HomeScene extends Scene {
 
         TextField link_field = getInputField("Paste Link Here", 14);
         Button submit_btn = getButton("Submit", 240,60, 25,"-fx-background-color: #6558f5; -fx-text-fill: #fff;");
+        Label warning_label = new Label("");
+        warning_label.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 18));
+
         VBox vBox = new VBox();
 
         submit_btn.setOnAction((event) -> {
-//            final String _URL = "https://amazonpricetracker3.herokuapp.com/usersproduct";
-            final String _URL = "http://127.0.0.1:8000/usersproduct";
+            final String _URL = "https://amazonpricetracker3.herokuapp.com/usersproduct";
+//            final String _URL = "http://127.0.0.1:8000/usersproduct";
 
             JSONObject body = new JSONObject();
             body.put("username", creds.get("username"));
@@ -103,15 +106,17 @@ public class HomeScene extends Scene {
 //                    Getting AnchorPane for Product
                     AnchorPane productPane = GetProducts.getProductsPane(product);
                     vBox.getChildren().add(productPane);
+                    warning_label.setText("Product Registered Successfully");
+                    warning_label.setStyle("-fx-text-fill: green;");
 
                 }
                 else if(response.statusCode() == 201){
-//                    TODO: display appropriate error in GUI
-                    System.out.println("User already registered for this product");
+                    warning_label.setText("User already registered for this product");
+                    warning_label.setStyle("-fx-text-fill: green");
                 }
                 else {
-//                    TODO: display appropriate error in GUI
-                    System.out.println("Something went wrong");
+                    warning_label.setText("Something Went Wrong");
+                    warning_label.setStyle("-fx-text-fill: red");
                 }
             } catch (IOException | InterruptedException | ParseException e) {
                 e.printStackTrace();
@@ -126,6 +131,8 @@ public class HomeScene extends Scene {
         vBox.setStyle("-fx-background-color: #fff");
         vBox.getChildren().add(link_field);
         vBox.getChildren().add(submit_btn);
+        vBox.getChildren().add(warning_label);
+
 
         ScrollPane sp = new ScrollPane();
         sp.setMinWidth(SCENE_WIDTH);
