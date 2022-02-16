@@ -318,6 +318,7 @@ class GetProducts implements Runnable {
      * */
     private void getTodaysPrice(JSONObject product) throws IOException, InterruptedException {
         final String _URL = "https://amazonpricetracker3.herokuapp.com/getprice?url=https://www.amazon.in/dp/" + product.get("asin");
+//        final String _URL = "http://127.0.0.1:8000/getprice?url=https://www.amazon.in/dp/" + product.get("asin");
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
@@ -332,7 +333,7 @@ class GetProducts implements Runnable {
             responseObject = (JSONObject) parser.parse(response.body().toString());
             product.put("price", responseObject.get("price"));
         } catch (ParseException e) {
-            System.out.println("e.getMessage().toString() = " + e.getMessage());
+            System.out.println("product = " + product.get("asin"));
             product.put("price", -1.0);
         }
         finally {
