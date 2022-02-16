@@ -76,9 +76,11 @@ public class HomeScene extends Scene {
 
         TextField link_field = getInputField("Paste Link Here", 14);
         Button submit_btn = getButton("Submit", 240,60, 25,"-fx-background-color: #6558f5; -fx-text-fill: #fff;");
+        VBox vBox = new VBox();
 
         submit_btn.setOnAction((event) -> {
-            final String _URL = "https://amazonpricetracker3.herokuapp.com/usersproduct";
+//            final String _URL = "https://amazonpricetracker3.herokuapp.com/usersproduct";
+            final String _URL = "http://127.0.0.1:8000/usersproduct";
 
             JSONObject body = new JSONObject();
             body.put("username", creds.get("username"));
@@ -93,16 +95,31 @@ public class HomeScene extends Scene {
 
             try {
                 HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                System.out.println("response = " + response);
-                System.out.println("response = " + response.body());
-            } catch (IOException | InterruptedException e) {
+                if (response.statusCode() == 200){
+                    JSONParser parser = new JSONParser();
+                    JSONObject responseObject = (JSONObject) parser.parse(response.body().toString());
+                    JSONObject product = (JSONObject) responseObject.get("product");
+
+//                    Getting AnchorPane for Product
+                    AnchorPane productPane = GetProducts.getProductsPane(product);
+                    vBox.getChildren().add(productPane);
+
+                }
+                else if(response.statusCode() == 201){
+//                    TODO: display appropriate error in GUI
+                    System.out.println("User already registered for this product");
+                }
+                else {
+//                    TODO: display appropriate error in GUI
+                    System.out.println("Something went wrong");
+                }
+            } catch (IOException | InterruptedException | ParseException e) {
                 e.printStackTrace();
             }
         });
 
 
 
-        VBox vBox = new VBox();
         vBox.setPrefWidth(SCENE_WIDTH);
         vBox.setPrefHeight(SCENE_HEIGHT);
         vBox.setSpacing(23);
@@ -154,7 +171,7 @@ class GetProducts implements Runnable {
      *       "price": 1700
      *  },
      * */
-    private static AnchorPane getProductsPane(JSONObject productObject){
+    public static AnchorPane getProductsPane(JSONObject productObject){
         /******* Anchor Pane will be appended to this.vbox *********/
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.setMinWidth(HomeScene.SCENE_WIDTH);
