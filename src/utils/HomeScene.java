@@ -217,11 +217,10 @@ class GetProducts implements Runnable {
         button.setCursor(Cursor.HAND);
         button.setId((String) productObject.get("asin"));
         button.setOnAction((event)->{
-            final String ASIN =  (String) productObject.get("asin");
 
             Stage stage = new Stage();
 
-            FluctuationStage fluctuationStage = new FluctuationStage(ASIN);
+            FluctuationStage fluctuationStage = new FluctuationStage(productObject);
             try {
                 fluctuationStage.start(stage);
             } catch (Exception e) {
