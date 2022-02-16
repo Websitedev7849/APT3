@@ -2,6 +2,7 @@ package utils;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -37,8 +38,9 @@ public class MainScene extends Scene {
         Group root = new Group();
 
         Button login_btn = getButton("Login", 140, "-fx-background-color: #1aae9f; -fx-text-fill: #fff;");
+        login_btn.setCursor(Cursor.HAND);
         Button signUp_btn = getButton("Sign Up", 200, "-fx-background-color: #c3cfd9;");
-
+        signUp_btn.setCursor(Cursor.HAND);
         login_btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {

@@ -1,16 +1,12 @@
 package utils;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -26,7 +22,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -278,7 +274,7 @@ class GetProducts implements Runnable {
 
     /**
      *
-     * @returns: Json String
+     * returns: Json String
      * e.g :
      * {
      *   "message": "Products Found",
@@ -307,13 +303,13 @@ class GetProducts implements Runnable {
     }
 
     /**
-     * @params JSONobject
+     * params JSONobject
      * e.g: {
      *       "asin": "B099S1MMJL",
      *       "name": "Master Labs Diamond Office Revolving Desk Chair with Umbrella Base with XW Handle (Black)",
      *  }
      *
-     * @returns JSONObject
+     * returns JSONObject
      * e.g: {
      *      "asin": "B099S1MMJL",
      *      "name": "Master Labs Diamond Office Revolving Desk Chair with Umbrella Base with XW Handle (Black)",
@@ -326,16 +322,18 @@ class GetProducts implements Runnable {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(_URL))
+                .timeout(Duration.ofMinutes(4))
                 .build();
         HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
         JSONParser parser = new JSONParser();
         JSONObject responseObject = null;
         try {
+            System.out.println("response = " + response.body().toString());
             responseObject = (JSONObject) parser.parse(response.body().toString());
             product.put("price", responseObject.get("price"));
         } catch (ParseException e) {
+            System.out.println("e.getMessage().toString() = " + e.getMessage());
             product.put("price", -1.0);
-            e.printStackTrace();
         }
         finally {
             productObjectsLists.add(product);
