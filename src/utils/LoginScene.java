@@ -103,6 +103,9 @@ public class LoginScene extends Scene {
         login_btn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                label.setText("loading...");
+                label.setStyle("-fx-text-fill : green;");
+
                 final String USERNAME = username_field.getText();
                 final String PASSWORD = password_field.getText();
 

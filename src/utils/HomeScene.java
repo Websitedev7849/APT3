@@ -85,6 +85,7 @@ public class HomeScene extends Scene {
             final String _URL = "https://amazonpricetracker3.herokuapp.com/usersproduct";
 //            final String _URL = "http://127.0.0.1:8000/usersproduct";
 
+            warning_label.setText("Please Wait...");
             JSONObject body = new JSONObject();
             body.put("username", creds.get("username"));
             body.put("pwd", creds.get("password"));

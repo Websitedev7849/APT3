@@ -2,21 +2,43 @@ package utils;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 
 public class FluctuationStage extends Application {
     JSONObject productObject;
     public static final int SCENE_WIDTH = 500;
     public static final int SCENE_HEIGHT = 700;
+    public static final String _URL = "https://amazonpricetracker3.herokuapp.com/fluctuations";
+
+
+    /**
+     * @params JSONobject
+     * e.g: {
+     *       "asin": "B099S1MMJL",
+     *       "name": "Master Labs Diamond Office Revolving Desk Chair with Umbrella Base with XW Handle (Black)",
+     *       "price": 1700
+     *  },
+     * */
     FluctuationStage(JSONObject productObject){
         this.productObject = productObject;
     }
@@ -66,7 +88,89 @@ public class FluctuationStage extends Application {
         productInfoPane.getChildren().add(todaysPrice_label);
         productInfoPane.getChildren().add(todaysPriceValue_label);
 
+        /********** FLUCTUATIONS PANE *************/
+        ScrollPane fluctuationsPane = new ScrollPane();
+        Pane datePane = new Pane();
+        Label dateLabel = new Label("Date");
+        dateLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 13));
+        dateLabel.setAlignment(Pos.CENTER);
+        dateLabel.setPadding(new Insets(8));
+        datePane.getChildren().add(dateLabel);
+        datePane.setStyle("-fx-background-color: #96c3ec; -fx-border-color: black");
+        datePane.setMinWidth(200);
+
+        Pane pricePane = new Pane();
+        Label priceLabel = new Label("Price");
+        priceLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 13));
+        priceLabel.setPadding(new Insets(8));
+        priceLabel.setAlignment(Pos.CENTER);
+        pricePane.getChildren().add(priceLabel);
+        pricePane.setStyle("-fx-background-color: #96c3ec; -fx-border-color: black");
+        pricePane.setLayoutX(200);
+        pricePane.setMinWidth(200);
+
+        VBox vBoxForFluctuationPane = new VBox();
+
+        HBox hBox = new HBox();
+        hBox.getChildren().addAll(datePane, pricePane);
+        vBoxForFluctuationPane.getChildren().add(hBox);
+//        fluctuationsPane.setStyle("-fx-background-color: red");
+
+
+        /********** GETTING AND APPENDING FLUCTUATIONS *************/
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(_URL + "?asin=" + this.productObject.get("asin")))
+                .build();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200){
+            JSONParser parser = new JSONParser();
+            JSONObject responseObject = (JSONObject) parser.parse(response.body());
+
+            JSONArray fluctuationsArray = (JSONArray) responseObject.get("fluctuations");
+
+
+            for (int i = 0; i < fluctuationsArray.size(); i++) {
+                JSONObject fluctuation = (JSONObject) fluctuationsArray.get(i);
+                System.out.println("fluctuation = " + fluctuation);
+                Pane dateValuePane = new Pane();
+                Label dateValueLabel = new Label((String) fluctuation.get("date"));
+                dateValueLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 13));
+                dateValueLabel.setPadding(new Insets(8));
+                dateValueLabel.setAlignment(Pos.CENTER);
+                dateValuePane.getChildren().add(dateValueLabel);
+                dateValuePane.setStyle("-fx-border-color: black");
+                dateValuePane.setMinWidth(200);
+
+                Pane priceValuePane = new Pane();
+                Label priceValueLabel = new Label( ((Double) fluctuation.get("price")).toString() );
+                priceValueLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 13));
+                priceValueLabel.setPadding(new Insets(8));
+                priceValueLabel.setAlignment(Pos.CENTER);
+                priceValuePane.getChildren().add(priceValueLabel);
+                priceValuePane.setStyle("-fx-border-color: black");
+                priceValuePane.setLayoutX(200);
+                priceValuePane.setMinWidth(200);
+
+                HBox hBox1 = new HBox();
+                hBox1.getChildren().addAll(dateValuePane, priceValuePane);
+                vBoxForFluctuationPane.getChildren().add(hBox1);
+            }
+
+            fluctuationsPane.setContent(vBoxForFluctuationPane);
+
+
+        }
+        else if (response.statusCode() == 404){
+            System.out.println("Not Found");
+        }
+
+
         vBox.getChildren().add(productInfoPane);
+        vBox.getChildren().add(fluctuationsPane);
+
 
         scrollPane.setContent(vBox);
         Scene scene = new Scene(scrollPane, SCENE_HEIGHT, SCENE_WIDTH);
