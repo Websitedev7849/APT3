@@ -43,7 +43,6 @@ public class HomeScene extends Scene {
 
         inputField.setPromptText(promptText); //c
         inputField.setFont(new Font("Arial", 15));
-        inputField.setFocusTraversable(false);
         inputField.setLayoutX(40);
         inputField.setLayoutY(setLayoutY); //c
         inputField.setMinHeight(35);
@@ -62,7 +61,6 @@ public class HomeScene extends Scene {
 
         button.setMinWidth(width);
         button.setMinHeight(35);
-        button.setFocusTraversable(false);
         button.setStyle(styleString); //c
         button.setCursor(Cursor.HAND);
 

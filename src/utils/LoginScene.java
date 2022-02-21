@@ -41,7 +41,6 @@ public class LoginScene extends Scene {
 
         button.setMinWidth(230);
         button.setMinHeight(35);
-        button.setFocusTraversable(false);
         button.setStyle(styleString); //c
         button.setCursor(Cursor.HAND);
 
@@ -61,7 +60,6 @@ public class LoginScene extends Scene {
 
         inputField.setPromptText(promptText); //c
         inputField.setFont(new Font("Arial", 15));
-        inputField.setFocusTraversable(false);
         inputField.setLayoutX(170);
         inputField.setLayoutY(setLayoutY); //c
         inputField.setMinHeight(35);
