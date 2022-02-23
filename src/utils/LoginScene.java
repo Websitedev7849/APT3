@@ -89,9 +89,6 @@ public class LoginScene extends Scene {
         TextField password_field = getInputField("Password", 170, true);
         Button login_btn = getButton("Login", 220, "-fx-background-color: #1aae9f; -fx-text-fill: #fff;");
 
-        username_field.setText("phineasflynn");
-        password_field.setText("12345678");
-
         Label label = new Label("");
         label.setLayoutX(235);
         label.setLayoutY(340);
